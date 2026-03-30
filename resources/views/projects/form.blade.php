@@ -25,6 +25,11 @@
     </div>
 
     <div class="field-group">
+        <label for="due_date">Due Date</label>
+        <input type="date" id="due_date" name="due_date" value="{{ old('due_date', $project->due_date ?? '') }}">
+    </div>
+
+    <div class="field-group">
         <label>Assigned to <span style="color:#b91c1c">*</span></label>
         @php
             $assigned = old('collaborators', isset($project->assigned_to) ? explode(',', $project->assigned_to) : []);

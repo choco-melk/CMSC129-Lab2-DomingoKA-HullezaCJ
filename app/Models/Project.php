@@ -14,6 +14,7 @@ class Project extends Model
         'description',
         'assigned_to',
         'thumbnail',
+        'due_date',
     ];
 
     public function getAssignedToArrayAttribute()

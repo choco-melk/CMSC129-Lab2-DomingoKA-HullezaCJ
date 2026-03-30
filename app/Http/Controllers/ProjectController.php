@@ -41,6 +41,7 @@ class ProjectController extends Controller
             'collaborators' => 'required|array|min:1',
             'collaborators.*' => 'in:Clyde,Jave,Keith,Neyro,Mark',
             'thumbnail' => 'nullable|image|max:5120',
+            'due_date' => 'nullable|date',
         ]);
 
         $thumbnailPath = null;
@@ -53,6 +54,7 @@ class ProjectController extends Controller
             'description' => $data['description'] ?? null,
             'assigned_to' => implode(',', $data['collaborators']),
             'thumbnail' => $thumbnailPath,
+            'due_date' => $data['due_date'] ?? null,
         ]);
 
         return redirect()->route('projects.index')->with('success', 'Project created successfully.');
@@ -73,6 +75,7 @@ class ProjectController extends Controller
             'collaborators' => 'required|array|min:1',
             'collaborators.*' => 'in:Clyde,Jave,Keith,Neyro,Mark',
             'thumbnail' => 'nullable|image|max:5120',
+            'due_date' => 'nullable|date',
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -87,6 +90,7 @@ class ProjectController extends Controller
             'description' => $data['description'] ?? null,
             'assigned_to' => implode(',', $data['collaborators']),
             'thumbnail' => $project->thumbnail,
+            'due_date' => $data['due_date'] ?? null,
         ]);
 
         return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
