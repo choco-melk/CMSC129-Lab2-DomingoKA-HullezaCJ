@@ -96,13 +96,17 @@ The purpose of this application is to demonstrate a basic CRUD (Create, Read, Up
   ```
 
 ## Screenshots of Your Application
-
-*(Add screenshots here)*
-
 - Home page showing list of projects
+<div><img width="1889" height="906" alt="image" src="https://github.com/user-attachments/assets/aca42bde-06c6-427c-8ca5-7f6ece23e246" /></div>
+
 - Create project form
+<div><img width="1895" height="908" alt="image" src="https://github.com/user-attachments/assets/76dfb156-5961-4587-bee7-8ed8270787e0" /></div>
+
 - Edit project form
-- Project details view
+<div><img width="1059" height="867" alt="image" src="https://github.com/user-attachments/assets/817e3bee-8ba5-4b9f-8c79-f231429becb9" /></div>
+  
+- Delete project page
+<div><img width="1223" height="538" alt="image" src="https://github.com/user-attachments/assets/4fdb00cd-8e95-4460-afc8-fbe9f0efa58d" /></div>
 
 ## List of Features Implemented
 
@@ -211,10 +215,6 @@ project-manager/
 - Uses PostgreSQL with Eloquent ORM
 - Migrations define schema changes
 - Models handle data access and relationships
-
-This structure separates concerns: Models handle data, Views handle presentation, Controllers handle logic and user interactions.
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
 ## License
 
