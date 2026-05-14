@@ -14,6 +14,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('assigned_to')->nullable();
             $table->string('thumbnail')->nullable();
+            $table->date('due_date')->nullable();
+            $table->softDeletes(); // adds deleted_at column
             $table->timestamps();
         });
     }
