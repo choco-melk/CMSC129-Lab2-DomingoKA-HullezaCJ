@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Collaborator;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -18,11 +19,22 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Seed 15 active projects
-        Project::factory(15)->create();
+        // Seed collaborators
+        $collaborators = collect(['Clyde', 'Jave', 'Keith', 'Neyro', 'Mark'])
+            ->map(fn($name) => Collaborator::create(['name' => $name]));
 
-        // Seed 3 already-trashed projects (for demo purposes)
-        Project::factory(3)->create()->each(function ($project) {
+        // Seed 15 active projects and attach random collaborators
+        Project::factory(15)->create()->each(function ($project) use ($collaborators) {
+            $project->collaborators()->attach(
+                $collaborators->random(rand(1, 3))->pluck('id')
+            );
+        });
+
+        // Seed 3 soft-deleted projects
+        Project::factory(3)->create()->each(function ($project) use ($collaborators) {
+            $project->collaborators()->attach(
+                $collaborators->random(rand(1, 2))->pluck('id')
+            );
             $project->delete();
         });
     }

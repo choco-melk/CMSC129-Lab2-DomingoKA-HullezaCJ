@@ -16,9 +16,16 @@ class Project extends Model
         'assigned_to',
         'thumbnail',
         'due_date',
-        'status'
+        'status',
     ];
 
+    // A project belongs to many collaborators
+    public function collaborators()
+    {
+        return $this->belongsToMany(Collaborator::class);
+    }
+
+    // Keep this for backward compatibility with the form
     public function getAssignedToArrayAttribute(): array
     {
         return $this->assigned_to ? explode(',', $this->assigned_to) : [];
