@@ -19,6 +19,16 @@ class ProjectController extends Controller
             ];
     }
 
+    private function statusLabels(): array
+    {
+        return [
+            'active'      => 'Active',
+            'in_progress' => 'In Progress',
+            'completed'   => 'Completed',
+            'on_hold'     => 'On Hold',
+        ];
+    }
+
     public function index(Request $request)
     {
         $query = Project::orderBy('created_at', 'desc');
@@ -29,6 +39,11 @@ class ProjectController extends Controller
                 $q->where('title', 'ilike', "%{$search}%")
                   ->orWhere('description', 'ilike', "%{$search}%");
             });
+        }
+
+        // Filter by status
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
         }
 
         // Filter by assigned collaborator
@@ -47,9 +62,13 @@ class ProjectController extends Controller
             };
         }
 
-        $projects = $query->get();
+        // Paginate — 10 per page, keeps search params in pagination links
+        $projects = $query->paginate(10)->withQueryString();
 
-        return view('projects.index', compact('projects'));
+        $collaborators  = $this->collaborators();
+        $statusLabels   = $this->statusLabels();
+
+        return view('projects.index', compact('projects', 'collaborators', 'statusLabels'));
     }
 
     public function create()
@@ -63,26 +82,36 @@ class ProjectController extends Controller
         $data = $request->validate([
             'title'           => 'required|string|max:255',
             'description'     => 'nullable|string',
+            'status'          => 'required|in:active,in_progress,completed,on_hold',
             'collaborators'   => 'required|array|min:1',
             'collaborators.*' => 'in:Clyde,Jave,Keith,Neyro,Mark',
-            'thumbnail'       => 'nullable|image|max:5120',
+            'thumbnail'       => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'due_date'        => 'nullable|date',
         ]);
 
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
-            $thumbnailPath = $request->file('thumbnail')->store('projects', 'public');
+            $thumbnailPath = $request->file('thumbnail')
+                                     ->store('projects', 'public');
         }
 
         Project::create([
             'title'       => $data['title'],
             'description' => $data['description'] ?? null,
+            'status'      => $data['status'],
             'assigned_to' => implode(',', $data['collaborators']),
             'thumbnail'   => $thumbnailPath,
             'due_date'    => $data['due_date'] ?? null,
         ]);
 
-        return redirect()->route('projects.index')->with('success', 'Project created successfully.');
+        return redirect()->route('projects.index')
+                         ->with('success', 'Project created successfully.');
+    }
+
+    public function show(Project $project)
+    {
+        $statusLabels = $this->statusLabels();
+        return view('projects.show', compact('project', 'statusLabels'));
     }
 
     public function edit(Project $project)
@@ -96,28 +125,39 @@ class ProjectController extends Controller
         $data = $request->validate([
             'title'           => 'required|string|max:255',
             'description'     => 'nullable|string',
+            'status'          => 'required|in:active,in_progress,completed,on_hold',
             'collaborators'   => 'required|array|min:1',
             'collaborators.*' => 'in:Clyde,Jave,Keith,Neyro,Mark',
-            'thumbnail'       => 'nullable|image|max:5120',
+            'thumbnail'       => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'due_date'        => 'nullable|date',
         ]);
 
+        // Handle thumbnail removal
+        if ($request->boolean('remove_thumbnail') && $project->thumbnail) {
+            Storage::disk('public')->delete($project->thumbnail);
+            $project->thumbnail = null;
+        }
+
+        // Handle new thumbnail upload
         if ($request->hasFile('thumbnail')) {
             if ($project->thumbnail) {
                 Storage::disk('public')->delete($project->thumbnail);
             }
-            $project->thumbnail = $request->file('thumbnail')->store('projects', 'public');
+            $project->thumbnail = $request->file('thumbnail')
+                                          ->store('projects', 'public');
         }
 
         $project->update([
             'title'       => $data['title'],
             'description' => $data['description'] ?? null,
+            'status'      => $data['status'],
             'assigned_to' => implode(',', $data['collaborators']),
             'thumbnail'   => $project->thumbnail,
             'due_date'    => $data['due_date'] ?? null,
         ]);
 
-        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
+        return redirect()->route('projects.index')
+                         ->with('success', 'Project updated successfully.');
     }
 
     public function confirmDelete(Project $project)
@@ -127,30 +167,33 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
-        // Soft delete
-        $project->delete();
-        return redirect()->route('projects.index')->with('success', 'Project moved to trash.');
+        $project->delete(); // soft delete only, keep the file
+        return redirect()->route('projects.index')
+                         ->with('success', 'Project moved to trash.');
     }
 
     public function trash()
     {
-        $projects = Project::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+        $projects = Project::onlyTrashed()
+                           ->orderBy('deleted_at', 'desc')
+                           ->get();
         return view('projects.trash', compact('projects'));
     }
 
     public function restore(Project $project)
     {
         $project->restore();
-        return redirect()->route('projects.trash')->with('success', 'Project restored successfully.');
+        return redirect()->route('projects.trash')
+                         ->with('success', 'Project restored successfully.');
     }
 
     public function forceDelete(Project $project)
     {
-        // permanently delete and clean up the file
         if ($project->thumbnail) {
             Storage::disk('public')->delete($project->thumbnail);
         }
         $project->forceDelete();
-        return redirect()->route('projects.trash')->with('success', 'Project permanently deleted.');
+        return redirect()->route('projects.trash')
+                         ->with('success', 'Project permanently deleted.');
     }
 }
