@@ -10,7 +10,6 @@ class ProjectFactory extends Factory
     {
         $collaborators = ['Clyde', 'Jave', 'Keith', 'Neyro', 'Mark'];
 
-        // Pick 1–3 random collaborators
         $assigned = fake()->randomElements(
             $collaborators,
             fake()->numberBetween(1, 3)
@@ -22,6 +21,7 @@ class ProjectFactory extends Factory
             'assigned_to' => implode(',', $assigned),
             'thumbnail'   => null,
             'due_date'    => fake()->optional(0.7)->dateTimeBetween('now', '+3 months')?->format('Y-m-d'),
+            'status'      => fake()->randomElement(['active', 'in_progress', 'completed', 'on_hold']),
         ];
     }
 }
