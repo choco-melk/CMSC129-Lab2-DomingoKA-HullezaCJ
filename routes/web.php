@@ -8,4 +8,17 @@ Route::get('/', function () {
 });
 
 Route::resource('projects', ProjectController::class)->except(['show']);
-Route::get('projects/{project}/confirm-delete', [ProjectController::class, 'confirmDelete'])->name('projects.confirm-delete');
+
+Route::get('projects/{project}/confirm-delete', [ProjectController::class, 'confirmDelete'])
+    ->name('projects.confirm-delete');
+
+Route::get('trash', [ProjectController::class, 'trash'])
+    ->name('projects.trash');
+
+Route::post('trash/{project}/restore', [ProjectController::class, 'restore'])
+    ->withTrashed()
+    ->name('projects.restore');
+
+Route::delete('trash/{project}/force-delete', [ProjectController::class, 'forceDelete'])
+    ->withTrashed()
+    ->name('projects.force-delete');

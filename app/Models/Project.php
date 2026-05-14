@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -17,7 +18,7 @@ class Project extends Model
         'due_date',
     ];
 
-    public function getAssignedToArrayAttribute()
+    public function getAssignedToArrayAttribute(): array
     {
         return $this->assigned_to ? explode(',', $this->assigned_to) : [];
     }
