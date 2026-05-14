@@ -7,7 +7,8 @@ Route::get('/', function () {
     return redirect()->route('projects.index');
 });
 
-Route::resource('projects', ProjectController::class)->except(['show']);
+// Now includes show
+Route::resource('projects', ProjectController::class);
 
 Route::get('projects/{project}/confirm-delete', [ProjectController::class, 'confirmDelete'])
     ->name('projects.confirm-delete');
