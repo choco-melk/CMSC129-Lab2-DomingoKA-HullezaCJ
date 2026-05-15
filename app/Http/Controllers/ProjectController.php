@@ -11,10 +11,10 @@ class ProjectController extends Controller
     private function collaborators(): array
     {
         return [
-            'Clyde', 
-            'Jave', 
-            'Keith', 
-            'Neyro', 
+            'Clyde',
+            'Jave',
+            'Keith',
+            'Neyro',
             'Mark'
             ];
     }
