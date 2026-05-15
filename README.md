@@ -118,10 +118,7 @@ The purpose of this application is to demonstrate a basic CRUD (Create, Read, Up
 
 - **Collaborator Assignment:**
   - Assign projects to multiple collaborators from a predefined list (Clyde, Jave, Keith, Neyro, Mark)
-
-- **File Upload:**
-  - Upload thumbnail images for projects (stored in `storage/app/public/projects`)
-
+  
 - **Form Validation:**
   - Server-side validation for all form inputs
   - Error display on forms
